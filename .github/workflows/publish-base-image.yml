@@ -42,7 +42,7 @@ jobs:
             CI=true dive registry.repohub.dev/${{env.namespace}}/${{env.repository}}
 
   build-from-main:
-     name: Publish as canary
+     name: Publish image for default branch
      needs: [ image-linter ]
      runs-on: "ubuntu-latest"
      if: ${{ github.ref == 'refs/heads/main'}}
