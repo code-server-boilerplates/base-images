@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+GITHUB_LOGIN=${GHCR_SERVICE_ACCOUNT_USERNAME:-"$GITHUB_LOGIN"}
+GITHUB_TOKEN=${GHCR_SERVICE_ACCOUNT_PASSWORD:-"$GITHUB_TOKEN"}
+
+if [[ $GITHUB_LOGIN == "" ]] || [[ $GITHUB_TOKEN == "" ]]; then
+  echo "warning: Missing login info for authenicating against GHCR, stopping here..."
+  exit 0
+fi
+
+if ! docker login ghcr.io -u "$GITHUB_LOGIN" -p "$GITHUB_TOKEN"; then
+  echo "warning: Login failed for registry ghcr.io, skiping..."
+fi
+
+if [[ $RHQCR_SERVICE_ACCOUNT_USERNAME == "" ]] || [[ $RHQCR_SERVICE_ACCOUNT_PASSWORD == "" ]]; then
+  echo "warning: Missing login info for authenicating against RHQCR, stopping here...."
+  exit 0
+fi
+
+if ! docker login ghcr.io -u "$RHQCR_SERVICE_ACCOUNT_USERNAME" -p "$RHQCR_SERVICE_ACCOUNT_PASSWORD"; then
+  echo "warning: Login failed for registry ghcr.io, skiping..."
+fi
