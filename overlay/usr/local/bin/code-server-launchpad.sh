@@ -1,4 +1,4 @@
-#!/usr/local/bin/dumb-init /bin/bash
+#!/usr/bin/dumb-init /bin/bash
 # shellcheck shell=bash
 
 # Instead of using code-server's main entrypoint script, we'll bring stuff from there
@@ -69,7 +69,8 @@ else
   echo "[$PREFIX] No GitHub.com access token found. You may need to manually copy your PATs from"
   echo "[$PREFIX] your password manager or generate one if you have. Implementing SSH storage is still an"
   echo "[$PREFIX] work-in-progress thing for now. See https://cdrs-docs.rtapp.tk/setup-gh-pat for details."
-  echo "[$PREFIX] Atleast repo (for private repos) or TODO (for public repos)"
+  echo "[$PREFIX] Atleast repo (for private repos) or public_repo (for public repos). Alternatively, use"
+  echo "[$PREFIX] the GitHub CLI to authenicate against Git CLI."
 fi
 ### GITLAB SAAS (gitlab.com) ###
 if [[ $GITLAB_TOKEN != "" ]] && [[ $GITLAB_LOGIN != "" ]]; then
@@ -86,6 +87,7 @@ else
   echo "[$PREFIX] No GitLab SaaS access token found. You may need to manually copy your PATs from your"
   echo "[$PREFIX] password manager or generate one if you have. Implementing SSH storage is still an"
   echo "[$PREFIX] work-in-progress thing for now. See https://cdrs-docs.rtapp.tk/setup-gh-pat for details."
+  echo "[$PREFIX] Alternatively, use GLab CLI to authenicate against the Git CLI."
 fi
 
 # function to clone the git repo or add a user's first file if no repo was specified.
@@ -101,10 +103,8 @@ project_init () {
 generatePassword() {
   OPENSSL_GENERATED_PASSWORD=$(openssl rand -base64 32)
   if [[ $GENERATE_PASSWORD == "true" ]] && [[ $PASSWORD != "" ]]; then
-     echo "[$PREFIX] warning: Using your defined password instead"
      echo "[$PREFIX] Your Web IDE secret is: $PASSWORD"
-     echo "[$PREFIX] Keep this secret as long as possible. If sharing devenvs with someone,"
-     echo "[$PREFIX] use secure channels and don't leak it anyway."
+     echo "[$PREFIX] Keep this secret as long as possible. If sharing devenvs with someone,use secure channels and don't leak it anyway."
   elif [[ $GENERATE_PASSWORD == "true" ]] || [[ $PASSWORD == "" ]]; then
      export PASSWORD=$OPENSSL_GENERATED_PASSWORD
      echo "[$PREFIX] Your Web IDE password is: $PASSWORD"
@@ -112,8 +112,7 @@ generatePassword() {
      echo "[$PREFIX] set GENERATE_PASSWORD to false and set PASSWORD to it in your PaaS service/Docker Compose config file."
   else
      echo "[$PREFIX] Your Web IDE secret is: $PASSWORD"
-     echo "[$PREFIX] Keep this secret as long as possible. If sharing devenvs with someone,"
-     echo "[$PREFIX] use secure channels and don't leak it anyway."
+     echo "[$PREFIX] Keep this secret as long as possible. If sharing devenvs with someone, use secure channels and don't leak it anyway."
   fi
 }
 
@@ -136,9 +135,6 @@ else
     RCLONE_AUTO_PULL="${RCLONE_AUTO_PULL:-true}"
 
     if [ "$RCLONE_VSCODE_TASKS" = "true" ]; then
-        # copy our tasks config to VS Code
-        echo "[$PREFIX] Applying VS Code tasks for rclone"
-        cp /tmp/rclone-tasks.json /home/coder/.local/share/code-server/User/tasks.json
         # install the extension to add to menu bar
         code-server --install-extension actboy168.tasks&
     else
