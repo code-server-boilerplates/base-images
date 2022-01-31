@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -o errexit
+
+# Block users from running this unless they're root.
+if [[ $EUID != 0 ]]; then
+	echo >&2 "Run this script again as root to upgrade packages."
+	exit 1
+fi
+
+if [ ! -d "${DAZZLE_MARKS}" ]; then
+	mkdir -p "${DAZZLE_MARKS}"
+fi
+
+apt-get update
+DEBIAN_FRONTEND=noninteractive RUNLEVEL=1 apt-get upgrade -yq --no-install-recommends
+
+apt-get clean -y
+
+rm -rfv \
+	/var/cache/debconf/* \
+	/var/lib/apt/lists/* \
+	/tmp/* \
+	/var/tmp/*
