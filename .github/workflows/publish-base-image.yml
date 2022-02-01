@@ -9,7 +9,7 @@ on:
   push:
     paths:
       - "Dockerfile"
-      - ".trigger-rebuild"
+      - ".trigger-build"
       - ".dockerignore"
       - "overlay/**"
     branches:
