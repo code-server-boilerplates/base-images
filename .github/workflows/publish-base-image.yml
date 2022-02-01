@@ -33,6 +33,10 @@ jobs:
            wget https://github.com/wagoodman/dive/releases/download/v0.10.0/dive_0.10.0_linux_amd64.deb -O /tmp/dive_linux_amd64.deb
            sudo apt install /tmp/dive_linux_amd64.deb
 
+       - uses: hadolint/hadolint-action@v1.6.0
+         with:
+          dockerfile: Dockerfile
+
        - name: Build and check for wasted space
          env:
            DOCKER_BUILDKIT: 1
@@ -45,7 +49,7 @@ jobs:
      name: Publish image for default branch
      needs: [ image-linter ]
      runs-on: "ubuntu-latest"
-     if: ${{ github.ref == 'refs/heads/main'}}
+     if: ${{ github.ref == 'refs/heads/main' }}
      steps:
        - name: "Create checkmates"
          uses: "actions/checkout@v2"
